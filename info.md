@@ -13,7 +13,7 @@
 ## 2. README.md (Copy-Paste Ready)
 
 ```markdown
-See [LICENSE](Readme.md)
+See [README](Readme.md)
 ```
 
 ## 3. Why This README Structure Works for a PhD Repository
