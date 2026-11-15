@@ -59,7 +59,7 @@ The project is structured around three research thrusts:
 │  │  │ (gatekeeper │  │ Observe     │  │ (safety-constrained │   │    │
 │  │  │  + LLM)     │  │ (agentic    │  │  remediation        │   │    │
 │  │  │             │  │  RCA)       │  │  executor)          │   │    │
-│  │  └──────┬──────┘  └──────┬──────┘  └──────────┬──────────┘   │    │
+│  │  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────┘   │    │
 │  │         │                │                     │             │    │
 │  │         ▼                ▼                     ▼             │    │
 │  │  ┌────────────────────────────────────────────────────────┐  │    │
