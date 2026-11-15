@@ -97,7 +97,7 @@ The project is structured around three research thrusts:
 
 ### 1. Clone and bootstrap
 ```bash
-git clone https://github.com/<your-username>/aegisops.git
+git clone https://github.com/JawherKl/aegisops.git
 cd aegisops
 make bootstrap   # installs kind, helm charts, and pulls Ollama model
 ```
