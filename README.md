@@ -115,7 +115,7 @@ make experiment-ci   # runs the CI failure injection + RCA baseline
 
 ### 4. View results
 ```bash
-make report   # opens the evaluation dashboard at localhost:3000
+make report   # opens the evaluation dashboard at localhost:30300
 ```
 
 ---

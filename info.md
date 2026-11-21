@@ -42,7 +42,7 @@ The first six months are about **building the instrument**, not running the full
 |---|---|---|
 | 1 | Initialize repo, CI skeleton (GitHub Actions: lint + test), write `Makefile` targets | `make test` passes on empty repo |
 | 2 | Write `infra/kind/cluster.yaml`; bootstrap Kind cluster | `kubectl get nodes` shows 3 nodes |
-| 3 | Deploy Prometheus + Alertmanager + Grafana via Helm | Grafana reachable at `localhost:3000`; Prometheus scraping the cluster |
+| 3 | Deploy Prometheus + Alertmanager + Grafana via Helm | Grafana reachable at `localhost:30300`; Prometheus scraping the cluster |
 | 4 | Deploy Loki + Tempo + sample app (Online Boutique) | Logs and traces visible in Grafana; app serves traffic |
 
 **Deliverable:** `make up` spins up the entire stack from zero.
