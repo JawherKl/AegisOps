@@ -1,0 +1,46 @@
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30090
+  prometheusSpec:
+    retention: 3d
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 250m
+    storageSpec: {}
+  prometheusOperator:
+    admissionWebhooks:
+      enabled: false
+      patch:
+        enabled: false
+    tls:
+      enabled: false
+
+alertmanager:
+  enabled: true
+  config:
+    route:
+      receiver: "null"
+    receivers:
+      - name: "null"
+  alertmanagerSpec:
+    storage: {} 
+
+grafana:
+  service:
+    type: NodePort
+    nodePort: 30300
+  persistence:
+    enabled: false
+  adminPassword: "aegisops-admin"   # Change in your local copy; never commit real secrets
+  # Pre-wire data sources so Grafana is usable immediately
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      url: http://loki-gateway.observability.svc.cluster.local:80
+      access: proxy
+    - name: Tempo
+      type: tempo
+      url: http://tempo.observability.svc.cluster.local:30320
+      access: proxy

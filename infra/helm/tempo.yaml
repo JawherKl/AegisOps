@@ -1,0 +1,22 @@
+tempo:
+  retention: 24h
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+  # Optional: enable metrics generator for trace-derived RED metrics
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: "http://prometheus-kube-prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write"
+
+service:
+  type: NodePort
+  nodePort: 30320
