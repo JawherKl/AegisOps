@@ -28,6 +28,7 @@ up: preflight ## Spin up Kind cluster + full observability stack
 	@echo "==> [2/4] Adding Helm repositories..."
 	@helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	@helm repo add grafana-community https://grafana-community.github.io/helm-charts
+	@helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 	@helm repo update
 	@echo "==> [3/4] Installing observability stack..."
 	@helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
@@ -39,6 +40,10 @@ up: preflight ## Spin up Kind cluster + full observability stack
 	@helm upgrade --install tempo grafana-community/tempo \
 		--namespace $(OBS_NAMESPACE) \
 		--values $(HELM_DIR)/tempo.yaml --wait --timeout 5m
+	@echo "==> Installing OpenTelemetry Collector..."
+	@helm upgrade --install otel-collector open-telemetry/opentelemetry-collector \
+		--namespace $(OBS_NAMESPACE) \
+		--values $(HELM_DIR)/otel-collector.yaml --wait --timeout 10m
 	@echo "==> [4/4] Verifying stack health..."
 	@bash scripts/wait-for-observability.sh
 	@echo ""
@@ -55,3 +60,18 @@ down: ## Tear down the cluster and all resources
 
 status: ## Show pod status in the observability namespace
 	@kubectl get pods -n $(OBS_NAMESPACE) -o wide
+
+verify-otel-env: ## Show OTEL env vars on the frontend deployment and running pod
+	@echo "=== Deployment spec ==="
+	@kubectl get deploy frontend -n online-boutique \
+	  -o jsonpath='{range .spec.template.spec.containers[0].env[*]}{.name}={.value}{"\n"}{end}' \
+	  | grep -E 'OTEL|TRACING|COLLECTOR' || echo "  (none found)"
+	@echo
+	@echo "=== Running pod spec ==="
+	@kubectl get pods -n online-boutique -l app=frontend \
+	  -o jsonpath='{range .items[0].spec.containers[0].env[*]}{.name}={.value}{"\n"}{end}' \
+	  | grep -E 'OTEL|TRACING|COLLECTOR' || echo "  (none found)"
+
+deploy-app: ## Deploy Online Boutique to the cluster
+	@kubectl create namespace online-boutique --dry-run=client -o yaml | kubectl apply -f -
+	@kubectl apply -n online-boutique -f infra/apps/online-boutique/online-boutique.yaml
