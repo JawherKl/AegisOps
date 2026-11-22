@@ -169,7 +169,18 @@ aegisops/
 │   │   ├── loki-stack.yaml
 │   │   └── tempo.yaml
 │   ├── chaos/
-│   │   └── chaos-mesh-install.sh
+│   │   ├── chaos-mesh-install.sh
+│   │   ├── taxonomy.yaml                    # Machine-readable taxonomy
+│   │   ├── experiments/
+│   │   │   ├── pod-kill-frontend.yaml
+│   │   │   ├── pod-failure-cartservice.yaml
+│   │   │   ├── network-delay-frontend-to-cartservice.yaml
+│   │   │   ├── network-loss-checkoutservice.yaml
+│   │   │   ├── stress-cpu-productcatalogservice.yaml
+│   │   │   └── stress-memory-recommendationservice.yaml
+│   │   ├── runner/
+│   │   │   ├── inject.py                    # Orchestrates injection + labeling
+│   │   │   └── scenarios.yaml               # Named scenarios referencing the YAMLs
 │   └── apps/
 │       └── online-boutique.yaml     # Sample microservice target
 │
