@@ -9,6 +9,7 @@ reason over.
 from __future__ import annotations
 
 import hashlib
+import re
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Optional
@@ -22,6 +23,19 @@ class SourceType(str, Enum):
     LOKI = "loki"
     TEMPO = "tempo"
     KUBERNETES = "kubernetes"
+
+
+def parse_iso_datetime(value: str) -> datetime:
+    """Parse ISO timestamps, including nanosecond fractional seconds."""
+    normalized = value.strip()
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+    normalized = re.sub(r"(\.\d{6})\d+(?=(?:[+-]\d{2}:?\d{2})?$)", r"\1", normalized)
+
+    timestamp = datetime.fromisoformat(normalized)
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    return timestamp
 
 
 class Severity(str, Enum):
