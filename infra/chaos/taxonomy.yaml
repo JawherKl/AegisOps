@@ -1,0 +1,10 @@
+taxonomy:
+  T1:
+    name: resource_exhaustion
+    failure_types: [stress-cpu, stress-memory]
+  T2:
+    name: availability_disruption
+    failure_types: [pod-kill, pod-failure]
+  T3:
+    name: communication_impairment
+    failure_types: [network-delay, network-loss, network-partition]
