@@ -26,7 +26,7 @@ INSTRUMENTED_SERVICES = {
 }
 
 def build_env_for(service_name: str) -> list[dict]:
-    return [
+    env = [
         # Online Boutique-specific tracing activation
         {"name": "ENABLE_TRACING", "value": "1"},
         {
@@ -45,6 +45,16 @@ def build_env_for(service_name: str) -> list[dict]:
             "value": "service.namespace=online-boutique,deployment.environment=testbed",
         },
     ]
+    if service_name == "loadgenerator":
+        env.append(
+            {
+                "name": "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+                "value": (
+                    "http://otel-collector.observability.svc.cluster.local:4318/v1/traces"
+                ),
+            }
+        )
+    return env
 
 
 def main() -> None:

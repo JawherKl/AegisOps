@@ -1,0 +1,11 @@
+FROM us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/loadgenerator:v0.10.7
+
+USER root
+RUN pip install --no-cache-dir \
+      opentelemetry-api==1.44.0 \
+      opentelemetry-sdk==1.44.0 \
+      opentelemetry-exporter-otlp-proto-http==1.44.0
+
+WORKDIR /loadgen
+RUN mv locustfile.py upstream_locustfile.py
+COPY locustfile.py otel_locust.py ./

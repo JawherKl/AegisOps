@@ -29,8 +29,8 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: 
-            us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/adservice:v0.10.7
+          image: aegisops/adservice:v0.10.7-otel
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9555
           env:
@@ -57,13 +57,19 @@ spec:
               cpu: 300m
               memory: 300Mi
           readinessProbe:
-            initialDelaySeconds: 20
+            timeoutSeconds: 3
             periodSeconds: 15
             grpc:
               port: 9555
           livenessProbe:
-            initialDelaySeconds: 20
+            timeoutSeconds: 3
             periodSeconds: 15
+            grpc:
+              port: 9555
+          startupProbe:
+            timeoutSeconds: 3
+            periodSeconds: 5
+            failureThreshold: 30
             grpc:
               port: 9555
 ---
@@ -117,8 +123,8 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: 
-            us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/shippingservice:v0.10.7
+          image: aegisops/shippingservice:v0.10.7-otel
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 50051
           env:
@@ -834,8 +840,8 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: 
-            us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/loadgenerator:v0.10.7
+          image: aegisops/loadgenerator:v0.10.7-otel
+          imagePullPolicy: IfNotPresent
           env:
             - name: FRONTEND_ADDR
               value: "frontend:80"
@@ -847,6 +853,8 @@ spec:
               value: http://otel-collector.observability.svc.cluster.local:4317
             - name: OTEL_EXPORTER_OTLP_PROTOCOL
               value: grpc
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://otel-collector.observability.svc.cluster.local:4318/v1/traces
             - name: OTEL_SERVICE_NAME
               value: loadgenerator
             - name: OTEL_RESOURCE_ATTRIBUTES
@@ -900,8 +908,8 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: 
-            us-central1-docker.pkg.dev/online-boutique-ci/microservices-demo/cartservice:v0.10.7
+          image: aegisops/cartservice:v0.10.7-otel
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7070
           env:

@@ -1,0 +1,47 @@
+diff --git a/src/shippingservice/main.go b/src/shippingservice/main.go
+--- a/src/shippingservice/main.go
++++ b/src/shippingservice/main.go
+@@ -26,6 +26,7 @@ import (
+ 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
++	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+ )
+ 
+ const (
+ 	defaultPort = "50051"
+ )
+@@ -56,10 +57,10 @@ func main() {
+ }
+ 
+ func main() {
++	shutdownTracing := initTracing()
++	defer shutdownTracing()
+ 	if os.Getenv("DISABLE_TRACING") == "" {
+-		log.Info("Tracing enabled, but temporarily unavailable")
+-		log.Info("See https://github.com/GoogleCloudPlatform/microservices-demo/issues/422 for more info.")
+-		go initTracing()
++		log.Info("Tracing enabled.")
+ 	} else {
+ 		log.Info("Tracing disabled.")
+ 	}
+@@ -99,10 +102,10 @@ func main() {
+ 	var srv *grpc.Server
+ 	if os.Getenv("DISABLE_STATS") == "" {
+ 		log.Info("Stats enabled, but temporarily unavailable")
+-		srv = grpc.NewServer()
++		srv = grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
+ 	} else {
+ 		log.Info("Stats disabled.")
+-		srv = grpc.NewServer()
++		srv = grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
+ 	}
+ 	svc := &server{}
+ 	pb.RegisterShippingServiceServer(srv, svc)
+@@ -169,8 +170,4 @@ func initStats() {
+ 	//TODO(arbrown) Implement OpenTelemetry stats
+ }
+ 
+-func initTracing() {
+-	// TODO(arbrown) Implement OpenTelemetry tracing
+-}
+-
+ func initProfiling(service, version string) {
