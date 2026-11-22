@@ -1,0 +1,26 @@
+FROM golang:1.27.0-alpine AS builder
+
+ARG TARGETOS=linux
+ARG TARGETARCH=amd64
+WORKDIR /src
+
+COPY go.mod go.sum ./
+RUN go get \
+      go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc@v0.63.0 \
+      go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.44.0 \
+      go.opentelemetry.io/otel/sdk@v1.44.0 \
+    && go mod download
+COPY . .
+RUN go mod tidy \
+    && GOOS=${TARGETOS} GOARCH=${TARGETARCH} CGO_ENABLED=0 \
+    go build -ldflags="-s -w" -o /go/bin/shippingservice .
+
+FROM gcr.io/distroless/static
+
+WORKDIR /src
+COPY --from=builder /go/bin/shippingservice /src/shippingservice
+ENV APP_PORT=50051
+ENV GOTRACEBACK=single
+
+EXPOSE 50051
+ENTRYPOINT ["/src/shippingservice"]

@@ -1,0 +1,57 @@
+diff --git a/src/cartservice/src/Startup.cs b/src/cartservice/src/Startup.cs
+index 136d303..0000000 100644
+--- a/src/cartservice/src/Startup.cs
++++ b/src/cartservice/src/Startup.cs
+@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
+ using Microsoft.Extensions.Diagnostics.HealthChecks;
+ using Microsoft.Extensions.Hosting;
+ using cartservice.cartstore;
+ using cartservice.services;
++using OpenTelemetry.Resources;
++using OpenTelemetry.Trace;
+ using Microsoft.Extensions.Caching.StackExchangeRedis;
+ 
+ namespace cartservice
+@@ -44,6 +46,11 @@ namespace cartservice
+             }
+ 
+ 
++            services.AddOpenTelemetry()
++                .ConfigureResource(resource => resource.AddService(serviceName: "cartservice"))
++                .WithTracing(tracing =>
++                    tracing.AddAspNetCoreInstrumentation().AddOtlpExporter());
++
+             services.AddGrpc();
+         }
+ 
+diff --git a/src/cartservice/src/cartservice.csproj b/src/cartservice/src/cartservice.csproj
+index f50d792..0000000 100644
+--- a/src/cartservice/src/cartservice.csproj
++++ b/src/cartservice/src/cartservice.csproj
+@@ -7,6 +7,9 @@
+   <ItemGroup>
+     <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
+     <PackageReference Include="Grpc.HealthCheck" Version="2.83.0" />
++    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.21.0" />
++    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.21.0" />
++    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.21.0" />
+     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.11" />
+     <PackageReference Include="Google.Cloud.Spanner.Data" Version="5.12.0" />
+     <PackageReference Include="Npgsql" Version="10.0.3" />
+diff --git a/src/cartservice/src/Dockerfile b/src/cartservice/src/Dockerfile
+index 5f669eb..0000000 100644
+--- a/src/cartservice/src/Dockerfile
++++ b/src/cartservice/src/Dockerfile
+@@ -28,5 +28,3 @@ RUN dotnet publish cartservice.csproj \
+     --self-contained true \
+-    -p:PublishTrimmed=true \
+-    -p:TrimMode=full \
+     -c release \
+     -o /cartservice
+@@ -38,4 +36,4 @@ WORKDIR /app
+ COPY --from=builder /cartservice .
+ EXPOSE 7070
+-ENV DOTNET_EnableDiagnostics=0 \
++ENV DOTNET_EnableDiagnostics=1 \
+     ASPNETCORE_HTTP_PORTS=7070
+ 

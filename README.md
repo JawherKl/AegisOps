@@ -112,10 +112,13 @@ make up
 make deploy-app
 ```
 
-This deploys Online Boutique, including its load generator, which continuously
-creates traffic and traces. After the pods become ready and traces are ingested,
+This builds and loads instrumented images for `adservice`, `cartservice`,
+`loadgenerator`, and `shippingservice`, then deploys Online Boutique. Its load
+generator continuously creates traffic and traces. After the pods become ready,
 open Grafana at `http://localhost:30300`, then choose **Explore → Tempo → Search**.
-The `frontend` service should appear once its first traces have arrived.
+Those four services should appear alongside the other instrumented services.
+`redis-cart` is a stock Redis server, so it is a dependency and is not expected to
+appear as a tracing service in Tempo.
 
 If it does not appear, check that the application is running and that its OTEL
 configuration is present:

@@ -7,7 +7,7 @@ KIND_CONFIG       := infra/kind/cluster.yaml
 OBS_NAMESPACE     := observability
 HELM_DIR          := infra/helm
 
-.PHONY: help preflight up down status
+.PHONY: help preflight up down status verify-otel-env build-instrumented-app deploy-app
 
 help: ## Show this help
 	@echo "AegisOps Testbed"
@@ -72,6 +72,9 @@ verify-otel-env: ## Show OTEL env vars on the frontend deployment and running po
 	  -o jsonpath='{range .items[0].spec.containers[0].env[*]}{.name}={.value}{"\n"}{end}' \
 	  | grep -E 'OTEL|TRACING|COLLECTOR' || echo "  (none found)"
 
-deploy-app: ## Deploy Online Boutique to the cluster
+build-instrumented-app: preflight ## Build and load traced Online Boutique images into Kind
+	@KIND_CLUSTER_NAME="$(KIND_CLUSTER_NAME)" bash scripts/build-instrumented-online-boutique.sh
+
+deploy-app: build-instrumented-app ## Build traced images and deploy Online Boutique
 	@kubectl create namespace online-boutique --dry-run=client -o yaml | kubectl apply -f -
 	@kubectl apply -n online-boutique -f infra/apps/online-boutique/online-boutique.yaml
