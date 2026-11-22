@@ -6,7 +6,7 @@ from typing import Any
 
 from aegisops.telemetry.backends.base import BackendClient
 from aegisops.telemetry.models import (
-    Alert, MetricSample, Severity, SourceType, TelemetryEvent,
+    Alert, MetricSample, Severity, SourceType, TelemetryEvent, parse_iso_datetime,
 )
 
 
@@ -43,7 +43,7 @@ class PrometheusClient(BackendClient):
                     alertname=labels.get("alertname", "unknown"),
                     severity=severity,
                     state=raw.get("state", "unknown"),
-                    starts_at=datetime.fromisoformat(raw["activeAt"].replace("Z", "+00:00")),
+                    starts_at=parse_iso_datetime(raw["activeAt"]),
                     labels=labels,
                     annotations=raw.get("annotations", {}),
                     service=labels.get("service") or labels.get("app"),
