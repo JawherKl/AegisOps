@@ -107,13 +107,40 @@ make bootstrap   # installs kind, helm charts, and pulls Ollama model
 make up
 ```
 
-### 3. Pull an LLM and run a sample experiment
+### 3. Deploy the sample application
+```bash
+make deploy-app
+```
+
+This deploys Online Boutique, including its load generator, which continuously
+creates traffic and traces. After the pods become ready and traces are ingested,
+open Grafana at `http://localhost:30300`, then choose **Explore → Tempo → Search**.
+The `frontend` service should appear once its first traces have arrived.
+
+If it does not appear, check that the application is running and that its OTEL
+configuration is present:
+```bash
+kubectl get pods -n online-boutique
+make verify-otel-env
+```
+
+For a cluster created before this fix, update the Collector release and restart
+the workloads so they resolve its corrected service name:
+```bash
+helm upgrade --install otel-collector open-telemetry/opentelemetry-collector \
+  --namespace observability --values infra/helm/otel-collector.yaml \
+  --wait --timeout 10m
+kubectl rollout restart deployment/frontend deployment/loadgenerator \
+  -n online-boutique
+```
+
+### 4. Pull an LLM and run a sample experiment
 ```bash
 ollama pull qwen2.5:7b
 make experiment-ci   # runs the CI failure injection + RCA baseline
 ```
 
-### 4. View results
+### 5. View results
 ```bash
 make report   # opens the evaluation dashboard at localhost:30300
 ```
