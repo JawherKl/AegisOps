@@ -1,0 +1,18 @@
+{
+  "injection_id": "inj-20261122-221930",
+  "failure_class": "T2.availability.pod-kill",
+  "target_service": "frontend",
+  "target_namespace": "online-boutique",
+  "chaos_resource": "PodChaos/frontend-pod-kill",
+  "injected_at": "2026-11-22T22:19:30.978018+00:00",
+  "ended_at": "2026-11-22T22:24:31.206570+00:00",
+  "parameters": {
+    "mode": "one",
+    "duration": "5m"
+  },
+  "expected_symptoms": [
+    "frontend pod restarts",
+    "5xx rate spike on frontend",
+    "loadgenerator error rate increases"
+  ]
+}
