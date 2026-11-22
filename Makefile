@@ -78,3 +78,29 @@ build-instrumented-app: preflight ## Build and load traced Online Boutique image
 deploy-app: build-instrumented-app ## Build traced images and deploy Online Boutique
 	@kubectl create namespace online-boutique --dry-run=client -o yaml | kubectl apply -f -
 	@kubectl apply -n online-boutique -f infra/apps/online-boutique/online-boutique.yaml
+
+doctor: ## Verify environment, files, services, and CLI entry points
+	@echo "=== Python ==="
+	@python --version
+	@echo "=== Required modules ==="
+	@python -c "import pydantic; print('  pydantic OK')"  || echo "  pydantic MISSING"
+	@python -c "import ollama; print('  ollama OK')"      || echo "  ollama MISSING"
+	@python -c "import httpx; print('  httpx OK')"        || echo "  httpx MISSING"
+	@echo "=== Package files ==="
+	@for f in \
+	  src/aegisops/llm/base.py \
+	  src/aegisops/llm/ollama_provider.py \
+	  src/aegisops/agents/rca/agent.py \
+	  src/aegisops/agents/rca/prompts.py \
+	  src/aegisops/cli/collect.py \
+	  src/aegisops/cli/rca.py \
+	; do \
+	  test -f "$$f" && echo "  OK      $$f" || echo "  MISSING $$f"; \
+	done
+	@echo "=== CLI entry points ==="
+	@which aegisops-collect >/dev/null && echo "  aegisops-collect OK" || echo "  aegisops-collect MISSING"
+	@which aegisops-rca     >/dev/null && echo "  aegisops-rca OK"     || echo "  aegisops-rca MISSING"
+	@echo "=== Services ==="
+	@curl -sf http://localhost:11434/api/tags >/dev/null && echo "  ollama server OK" || echo "  ollama server NOT RESPONDING"
+	@curl -sf http://localhost:30090/-/ready  >/dev/null && echo "  prometheus OK"    || echo "  prometheus NOT READY"
+	@curl -sf http://localhost:30310/ready    >/dev/null && echo "  loki OK"          || echo "  loki NOT READY"

@@ -1,2 +1,3 @@
 [console_scripts]
 aegisops-collect = aegisops.cli.collect:main
+aegisops-rca = aegisops.cli.rca:main

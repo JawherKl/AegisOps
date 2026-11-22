@@ -11,6 +11,7 @@ dependencies = [
     "pydantic>=2.6",
     "httpx>=0.27",
     "ruamel.yaml>=0.18",
+    "ollama>=0.3", 
 ]
 
 [project.optional-dependencies]
@@ -22,6 +23,7 @@ dev = [
 
 [project.scripts]
 aegisops-collect = "aegisops.cli.collect:main"
+aegisops-rca = "aegisops.cli.rca:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
