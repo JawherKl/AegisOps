@@ -1,1 +1,0 @@
-/home/jawher/Documents/AegisOps/src/aegisops/telemetry/__init__.py
