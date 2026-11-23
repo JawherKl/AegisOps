@@ -10,7 +10,7 @@
 [![Tempo](https://img.shields.io/badge/Traces-Tempo-red?logo=grafana)](https://grafana.com/oss/tempo/)
 [![Phase 1](https://img.shields.io/badge/Phase%201-Instrumentation-brightgreen)]()
 
-<img width="370" height="256" alt="top-banner-Aiops" src="https://github.com/user-attachments/assets/8b7752da-fd10-4fc0-88e0-2ca08346ea38" />
+<img width="360" height="256" alt="top-banner-Aiops" src="https://github.com/user-attachments/assets/8b7752da-fd10-4fc0-88e0-2ca08346ea38" />
 
 </div>
 
