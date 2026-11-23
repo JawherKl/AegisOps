@@ -7,13 +7,16 @@ KIND_CONFIG       := infra/kind/cluster.yaml
 OBS_NAMESPACE     := observability
 HELM_DIR          := infra/helm
 
-.PHONY: help preflight up down status verify-otel-env build-instrumented-app deploy-app
+.PHONY: help test preflight up down status verify-otel-env build-instrumented-app deploy-app
 
 help: ## Show this help
 	@echo "AegisOps Testbed"
 	@echo "================"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+
+test: ## Run the test suite
+	@python -m pytest
 
 preflight: ## Check required tools are installed
 	@bash scripts/preflight.sh
